@@ -6,7 +6,7 @@
       <div class ='container'>
         <h2>My Tasks</h2>
         <ul class='taskList'>
-          <li v-for='(taskItem, index) in taskList' 
+          <li v-for='(taskItem, index) in displayList' 
            :key='`${index}_${Math.random()}`'>
             
             <input type='checkbox' :checked='!!taskItem.finishedAt'
@@ -14,10 +14,10 @@
              {{ taskItem.task }}
             
             <span v-if='taskItem.finishedAt'>
-             {{ taskItem.finishedAt }}
+             Done at: 
+             {{ formatDate(taskItem.finishedAt) }}
           </span>
           </li>
-       
         </ul>
       </div>
     </div>
@@ -42,7 +42,33 @@ export default {
   data:() => ({
     taskList: [],
   }), 
+  computed: {
+    displayList(){
+      return this.taskList;
+    },
+  },
   methods:{
+    formatDate(value){
+      if(!value) return '';
+      if( typeof value !== 'number') return value;
+
+      const browserLocale = 
+              navigator.languages && navigator.languages.length
+              ? navigator.languages[0]
+              : navigator.language;
+
+      const intlDateTime = new Intl.DateTimeFormat(
+              browserLocale,
+              {
+                  year: 'numeric',
+                  month: 'numeric',
+                  day: 'numeric',
+                  hour: 'numeric',
+                  minute: 'numeric'
+              });
+
+      return intlDateTime.format( new Date(value));
+    },
     addNewTask(task){
       this.taskList.push({
         task, 
